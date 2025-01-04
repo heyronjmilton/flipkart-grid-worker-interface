@@ -2,6 +2,9 @@ import React, { useRef, useState, useEffect } from 'react';
 import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify styles
+import Box from '@mui/material/Box';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { styled } from '@mui/material/styles';
 import { waveform } from 'ldrs';
 
 const Packet = () => {
@@ -17,10 +20,51 @@ const Packet = () => {
   const [batchName, setBatchName] = useState("");
   const [reportAvailable, setReportAvailable] = useState(false);
   const [loading, setLoading] = useState(false);
+  const progress = useRef();
 
   const host = "127.0.0.1:8000";
 
   waveform.register()
+
+  const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+    height: 10,
+    borderRadius: 5,
+    
+    // Style for the background (track)
+    [`&.${linearProgressClasses.colorPrimary}`]: {
+      backgroundColor: theme.palette.grey[200],
+      ...theme.applyStyles('dark', {
+        backgroundColor: theme.palette.grey[800],
+      }),
+    },
+  
+    // Style for the bar (filled part of the progress)
+    [`& .${linearProgressClasses.bar}`]: {
+      borderRadius: 5,
+      backgroundColor: '#1a90ff', // default color
+      // Smooth animation for the determinate progress bar (width transition)
+      transition: 'width 0.5s ease-in-out',  // You can tweak this value for different speed
+      ...theme.applyStyles('dark', {
+        backgroundColor: '#308fe8', // dark theme color for the bar
+      }),
+    },
+  
+    // Indeterminate style
+    '&.MuiLinearProgress-indeterminate': {
+      // Adjust the indeterminate animation
+      [`& .${linearProgressClasses.bar}`]: {
+        // Smooth sliding animation for the indeterminate bar
+        animation: 'indeterminate 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+      },
+    },
+  
+    // Keyframes for indeterminate animation
+    '@keyframes indeterminate': {
+      '0%': { transform: 'translateX(-100%)' },
+      '100%': { transform: 'translateX(100%)' },
+    },
+  }));
+
     useEffect(()=>{
         
     })
@@ -169,6 +213,8 @@ const Packet = () => {
                 shownNameDetection.current = true;
               }
               
+              console.log("DETECTION PROGRESS : ",data['detection_progress'])
+              progress.current = data['detection_progress']
               
 
               if (data['report_generated'] && !hasShownUpdate.current) {
@@ -178,7 +224,6 @@ const Packet = () => {
                 setLoading(false);
               }
               
-
               const newItem = data['details'];
               setItems(newItem)
               // console.log(items)
@@ -343,9 +388,9 @@ const Packet = () => {
                   
                     <div className='flex flex-row'>
 
-                  <button className="bg-[#2563EB] px-2 py-2 text-white ml-4 w-1/2 md:w-1/4 text-xs md:text-lg font-bold rounded-lg transition-colors" onClick={onFinish} >
-                  Finish
-                </button>
+                          <button className="bg-[#2563EB] px-2 py-2 text-white ml-4 w-1/2 md:w-1/4 text-xs md:text-lg font-bold rounded-lg transition-colors" onClick={onFinish} >
+                          Finish
+                        </button>
                 {reportAvailable &&
 
                   <button
@@ -356,7 +401,17 @@ const Packet = () => {
                   </button>
                 }
 
-                    </div>
+                  
+
+
+                  </div>
+                  <Box sx={{ width: '50%', p:2 }}>
+                    <p className='text-white'>
+                      Detection Progress
+                    </p>
+                    <LinearProgress variant="determinate" value={progress.current} />
+                    <BorderLinearProgress variant="determinate" value={progress.current} />
+                  </Box>
                 
                 </div>
                
