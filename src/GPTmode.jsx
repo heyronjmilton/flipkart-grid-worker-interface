@@ -17,7 +17,7 @@ const GPTmode = () => {
   const [batchName, setBatchName] = useState("");
   const [reportAvailable, setReportAvailable] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const testdata = useRef([]);
   const host = "127.0.0.1:8000";
 
   waveform.register()
@@ -162,10 +162,22 @@ const GPTmode = () => {
             objectwebsocket.onmessage = (event) => {
             // console.log("items data :",event.data);
             try {
+              testdata.current = [];
               const data = JSON.parse(event.data)
-              console.log(data)
-              
-              
+              console.log(data.msg)
+              if(data.msg.length != 0)
+              {
+                testdata.current = JSON.parse(data.msg);
+
+              } else {
+                console.log("empty")
+                testdata.current = [];
+              }
+              // testdata.current = [
+              //   {"fruit": "Apple"},
+              //   {"size": "Large"},
+              //   {"color": "Red"}
+              // ]
               
 
               if (data['report_generated'] && !hasShownUpdate.current) {
@@ -176,9 +188,9 @@ const GPTmode = () => {
               }
               
 
-              // const newItem = data['details'];
-              // setItems(newItem)
-              // console.log(items)
+              const newItem = testdata.current;
+              setItems(newItem)
+              console.log(testdata.current.length)
             } catch (error) {
               console.log(error)
           }
@@ -340,18 +352,8 @@ const GPTmode = () => {
                   
                     <div className='flex flex-row'>
 
-                  <button className="bg-[#2563EB] px-2 py-2 text-white ml-4 w-1/2 md:w-1/4 text-xs md:text-lg font-bold rounded-lg transition-colors" onClick={onFinish} >
-                  Finish
-                </button>
-                {reportAvailable &&
-
-                  <button
                   
-                    onClick={downloadXlsx}
-                    className={` px-2 py-2 text-white ml-4 w-1/2 md:w-1/4 text-xs md:text-lg font-bold rounded-lg transition-colors ${reportAvailable ? 'bg-green-700' : 'bg-gray-700'} `}>
-                      Download Report
-                  </button>
-                }
+                
 
                     </div>
                 
@@ -373,18 +375,18 @@ const GPTmode = () => {
                    shadow-black p-2 h-[250px] md:h-[450px] my-auto 
                    '>
                     <h1 className='font-bold text-white text-2xl md:text-3xl text-center font-extrabold my-2'>Item List</h1>
-                    <h1 className='text-white text-center text-md md:text-2xl font-bold flex-wrap'>Count: {items.length}</h1>
+                    <h1 className='text-white text-center text-md md:text-2xl font-bold flex-wrap'>Count: {testdata.current.length}</h1>
                     {
-                        items.length > 0 ? (
-                            items.map((item, index) => (
+                        testdata.current.length > 0 ? (
+                            testdata.current.map((item, index) => (
                               <div key={index+1} className='text-white font-semibold text-xl lg:text-2xl p-1'>
+                                
                                 <h1>
                                   {index+1}.
-                                  {item['object_name'].split("#")[0]} 
+                                  {Object.keys(item)} 
                                   </h1>
-                                <h1 className='ml-2'><span className='font-normal text-xl'>EXPIRY:</span> {item['expiry']}</h1>
-                                <h1 className='ml-2'><span className='font-normal text-xl'>MFG:</span>{item['mfg']}</h1>
-                                <h1 className='ml-2'><span className='font-normal text-xl'>BATCH NO:</span>{item['batch_no']}</h1>
+                                <h1 className='ml-2'><span className='font-normal text-xl'>Count:</span> {Object.values(item)}</h1>
+                               
                               </div>
                             )
                           )

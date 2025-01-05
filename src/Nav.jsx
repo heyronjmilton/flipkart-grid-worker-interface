@@ -30,6 +30,11 @@ const Nav=()=>{
                         Fruits  
                         </Link>
                     </li>
+                    <li>
+                        <Link to="/gptmode" onClick={() => handleClick("/gptmode")}>
+                        GPT Mode(BETA)  
+                        </Link>
+                    </li>
 
                 </ul>
         </nav>
