@@ -4,7 +4,7 @@ import Home from './Home.jsx'
 import Packed from './Packet.jsx'
 import Fruits from './Fruits.jsx'
 import Nav from './Nav.jsx'
-
+import GPTmode from './GPTmode.jsx'
 
 function App() {
   return (
@@ -16,6 +16,7 @@ function App() {
           <Route path='/' element={<Home/>}  />     
           <Route path='/packed' element={<Packed/>} />
           <Route path='/fruits' element={<Fruits/>}/>
+          <Route path='/gptmode' element={<GPTmode />}/>
           
         </Routes>
      </BrowserRouter>
